@@ -101,8 +101,8 @@ install_cli() {
 
     # Add symlinks
     printf "%s" "setup symlinks..."
-    ln -s ~/.vscode-server/code ~/.vscode-server/code-"${commit_sha}"
-    ln -s "${HOME}"/.vscode-server/code ~/code
+    mv ~/.vscode-server/code ~/.vscode-server/code-"${commit_sha}"
+    ln -s "${HOME}"/.vscode-server/code-"${commit_sha}" ~/code
     echo "done"
 }
 
@@ -110,29 +110,20 @@ install_server() {
     echo "setup directories:"
     # Make the directories where the VS Code will search. There may be others not
     # listed here.
-    # NOTE: VS Code will runas the logged in user, so ensure they have
-    #       read/write to the following directories
-    mkdir -vp ~/.vscode-server/bin/"${commit_sha}"
     # VSCode Requirements for pre-installing extensions
     mkdir -vp ~/.vscode-server/extensions
-    # found this in the VSCode remote extension output when connecting to an existing container
-    mkdir -vp ~/.vscode-server/extensionsCache
     # This should handle installs for https://vscode.dev/
-    mkdir -vp ~/.vscode/cli/servers/Stable-"${commit_sha}"
-    mkdir -vp ~/.vscode-server/cli/servers/Stable-"${commit_sha}"
+    mkdir -vp ~/.vscode-server/cli/servers/Stable-"${commit_sha}"/server
     echo "done"
 
     # Extract the tarball to the right location.
     printf "%s" "extracting ${archive}..."
-    tar -xz -C ~/.vscode-server/bin/"${commit_sha}" --strip-components=1 --no-same-owner -f "/tmp/${archive}"
+    tar -xz -C ~/.vscode-server/cli/servers/Stable-"${commit_sha}"/server --strip-components=1 --no-same-owner -f "/tmp/${archive}"
     echo "done"
 
     # Add symlinks
     printf "%s" "setup symlinks..."
-    ln -s ~/.vscode-server/bin/"${commit_sha}" ~/.vscode-server/bin/default_version
-    ln -s ~/.vscode-server/bin/"${commit_sha}" ~/.vscode/cli/servers/Stable-"${commit_sha}"/server
-    ln -s ~/.vscode-server/bin/"${commit_sha}" ~/.vscode-server/cli/servers/Stable-"${commit_sha}"/server
-    ln -s ~/.vscode-server/bin/"${commit_sha}"/bin/code-server ~/code-server
+    ln -s ~/.vscode-server/cli/servers/Stable-"${commit_sha}"/server/bin/code-server ~/code-server
     echo "done"
 }
 
